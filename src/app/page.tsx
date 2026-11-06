@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import { Faq } from "@/components/Faq";
 import { Icon } from "@/components/Icon";
 import { Calculator, OrderForm, OrderProvider } from "@/components/Order";
 import { RevealObserver } from "@/components/Reveal";
@@ -62,7 +63,7 @@ export default function Home() {
                 <p className="text-sm text-muted">обычный срок чистки</p>
               </div>
               <div className="glass ml-10 rounded-[20px] px-5 py-4">
-                <p className="text-3xl font-semibold tracking-tight">0 ₽</p>
+                <p className="text-3xl font-semibold tracking-tight">Бесплатно</p>
                 <p className="text-sm text-muted">вывоз от {rub(COURIER_FREE_FROM)}</p>
               </div>
             </div>
@@ -105,8 +106,8 @@ export default function Home() {
           <Head title={<>Что мы<br />чистим.</>}>От рубашки на понедельник до штор в гостиной.</Head>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((s, i) => (
-              <article key={s.title} className="reveal glass rounded-[24px] p-7" style={{ "--d": `${(i % 3) * 0.08}s` } as CSSProperties}>
-                <div className="glass mb-6 grid size-[58px] place-items-center rounded-[18px]">
+              <article key={s.title} className="reveal glass rounded-[24px] p-7 hover:-translate-y-1.5 hover:border-white/25" style={{ "--d": `${(i % 3) * 0.08}s` } as CSSProperties}>
+                <div className="pop glass mb-6 grid size-[58px] place-items-center rounded-[18px]">
                   <Icon name={s.icon} />
                 </div>
                 <h3 className="mb-2 text-[22px] font-semibold tracking-[-0.03em]">{s.title}</h3>
@@ -122,9 +123,7 @@ export default function Home() {
             Отметьте вещи — сумма посчитается сразу. Вывоз и доставка бесплатно от {rub(COURIER_FREE_FROM)}. Цены
             примерные: это концепт.
           </Head>
-          <div className="reveal">
-            <Calculator />
-          </div>
+          <Calculator />
         </section>
 
         {/* этапы */}
@@ -133,7 +132,7 @@ export default function Home() {
           <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
               <li key={s.title} className="reveal border-t border-line pt-6" style={{ "--d": `${i * 0.08}s` } as CSSProperties}>
-                <span className="glass grid size-11 place-items-center rounded-full text-sm font-semibold tabular-nums">0{i + 1}</span>
+                <span className="pop glass grid size-11 place-items-center rounded-full text-sm font-semibold tabular-nums">0{i + 1}</span>
                 <h3 className="mt-5 mb-2 text-[22px] font-semibold tracking-[-0.03em]">{s.title}</h3>
                 <p className="leading-relaxed text-muted">{s.text}</p>
               </li>
@@ -149,19 +148,7 @@ export default function Home() {
               <br />
               заказа.
             </h2>
-            <div className="reveal divide-y divide-line border-y border-line">
-              {FAQ.map((f) => (
-                <details key={f.q} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-medium tracking-tight">
-                    {f.q}
-                    <span className="faq-icon glass grid size-9 shrink-0 place-items-center rounded-full text-xl leading-none transition-transform duration-500 ease-out-soft" aria-hidden="true">
-                      +
-                    </span>
-                  </summary>
-                  <p className="max-w-xl pb-6 leading-relaxed text-muted">{f.a}</p>
-                </details>
-              ))}
-            </div>
+            <Faq items={FAQ} />
           </div>
         </section>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useId, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { createContext, useContext, useId, useMemo, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { COURIER_FREE_FROM, COURIER_PRICE, PRICES, rub } from "@/lib/data";
 
 /* Общее состояние заказа: калькулятор в разделе «Цены» и форма заявки
@@ -63,10 +63,14 @@ export function Calculator() {
   const { sum, count, courier } = useOrder();
   const left = COURIER_FREE_FROM - sum;
   return (
-    <div className="glass overflow-hidden rounded-[28px]">
+    <div className="reveal glass overflow-hidden rounded-[28px]">
       <ul className="divide-y divide-line">
-        {PRICES.map((p) => (
-          <li key={p.id} className="flex items-center justify-between gap-4 px-5 py-4 sm:px-8">
+        {PRICES.map((p, i) => (
+          <li
+            key={p.id}
+            className="reveal flex items-center justify-between gap-4 px-5 py-4 transition-colors duration-300 hover:bg-white/[0.03] sm:px-8"
+            style={{ "--d": `${0.15 + i * 0.06}s` } as CSSProperties}
+          >
             <div className="min-w-0">
               <p className="text-lg font-medium tracking-tight">{p.name}</p>
               <p className="text-sm text-muted">
@@ -101,12 +105,32 @@ export function Calculator() {
   );
 }
 
+/* Белорусский номер: +375 XX XXX-XX-XX. Принимаем и «80 29 …», и просто «29 …». */
+function toBelarusDigits(raw: string) {
+  let d = raw.replace(/\D/g, "");
+  if (d.startsWith("80")) d = "375" + d.slice(2);
+  else if (!d.startsWith("375") && d.length > 0 && !"375".startsWith(d)) d = "375" + d;
+  return d.slice(0, 12);
+}
+function formatBelarus(raw: string) {
+  const d = toBelarusDigits(raw);
+  if (!d) return "";
+  const rest = d.slice(3);
+  let out = "+" + d.slice(0, 3);
+  if (rest.length) out += " " + rest.slice(0, 2);
+  if (rest.length > 2) out += " " + rest.slice(2, 5);
+  if (rest.length > 5) out += "-" + rest.slice(5, 7);
+  if (rest.length > 7) out += "-" + rest.slice(7, 9);
+  return out;
+}
+
 const SLOTS = ["Сегодня, 18:00–20:00", "Сегодня, 20:00–22:00", "Завтра, 08:00–10:00", "Завтра, 18:00–20:00"];
 
 export function OrderForm() {
   const { cart, sum, count, courier } = useOrder();
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
+  const [phone, setPhone] = useState("");
   const uid = useId();
 
   const lines = PRICES.filter((p) => cart[p.id]).map((p) => `${p.name} × ${cart[p.id]}`);
@@ -115,10 +139,10 @@ export function OrderForm() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get("name") || "").trim();
-    const digits = String(fd.get("phone") || "").replace(/\D/g, "");
+    const digits = toBelarusDigits(String(fd.get("phone") || ""));
     const next: typeof errors = {};
     if (name.length < 2) next.name = "Напишите, как к вам обращаться";
-    if (digits.length < 10 || digits.length > 12) next.phone = "Проверьте номер: нужно 10–11 цифр";
+    if (digits.length !== 12) next.phone = "Проверьте номер: например, +375 29 123-45-67";
     setErrors(next);
     if (Object.keys(next).length) {
       const first = e.currentTarget.querySelector<HTMLInputElement>(next.name ? "[name=name]" : "[name=phone]");
@@ -160,7 +184,14 @@ export function OrderForm() {
         <label htmlFor={`${uid}-phone`} className="mb-1.5 block text-sm text-muted">
           Телефон
         </label>
-        <input id={`${uid}-phone`} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="+7 900 000-00-00" className={field}
+        <input id={`${uid}-phone`} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="+375 29 123-45-67" className={field}
+          value={phone}
+          onChange={(e) => {
+            setPhone(formatBelarus(e.target.value));
+            if (errors.phone) setErrors((er) => ({ ...er, phone: undefined }));
+          }}
+          onFocus={() => !phone && setPhone("+375 ")}
+          onBlur={() => phone.replace(/\D/g, "") === "375" && setPhone("")}
           aria-invalid={!!errors.phone} aria-describedby={errors.phone ? `${uid}-phone-err` : undefined} />
         {errors.phone && <p id={`${uid}-phone-err`} className="mt-1.5 text-sm text-[#ffb4a8]">{errors.phone}</p>}
       </div>

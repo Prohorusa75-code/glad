@@ -1,19 +1,19 @@
 /* Тексты и цены сайта. Бренд вымышленный, цены примерные — это концепт для портфолио. */
 
-export const COURIER_FREE_FROM = 2000;
-export const COURIER_PRICE = 300;
+export const COURIER_FREE_FROM = 60;
+export const COURIER_PRICE = 8;
 
 export type PriceItem = { id: string; name: string; note: string; price: number };
 
 export const PRICES: PriceItem[] = [
-  { id: "shirt", name: "Рубашка", note: "стирка и глажка", price: 390 },
-  { id: "trousers", name: "Брюки или юбка", note: "химчистка", price: 590 },
-  { id: "dress", name: "Платье", note: "в том числе шёлк", price: 990 },
-  { id: "suit", name: "Костюм-двойка", note: "пиджак и брюки", price: 1490 },
-  { id: "coat", name: "Пальто", note: "шерсть, кашемир", price: 1690 },
-  { id: "down", name: "Пуховик", note: "с восстановлением пуха", price: 1890 },
-  { id: "sneakers", name: "Кроссовки", note: "чистка и пропитка", price: 1290 },
-  { id: "plaid", name: "Плед или покрывало", note: "до 2 × 2 м", price: 890 },
+  { id: "shirt", name: "Рубашка", note: "стирка и глажка", price: 9 },
+  { id: "trousers", name: "Брюки или юбка", note: "химчистка", price: 14 },
+  { id: "dress", name: "Платье", note: "в том числе шёлк", price: 24 },
+  { id: "suit", name: "Костюм-двойка", note: "пиджак и брюки", price: 36 },
+  { id: "coat", name: "Пальто", note: "шерсть, кашемир", price: 42 },
+  { id: "down", name: "Пуховик", note: "с восстановлением пуха", price: 45 },
+  { id: "sneakers", name: "Кроссовки", note: "чистка и пропитка", price: 32 },
+  { id: "plaid", name: "Плед или покрывало", note: "до 2 × 2 м", price: 22 },
 ];
 
 export const SERVICES = [
@@ -55,4 +55,5 @@ export const FAQ = [
   },
 ];
 
-export const rub = (n: number) => `${n.toLocaleString("ru-RU")} ₽`;
+/* белорусские рубли */
+export const rub = (n: number) => `${n.toLocaleString("ru-RU")} BYN`;
